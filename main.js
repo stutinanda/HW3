@@ -42,16 +42,6 @@ app.get('/recent', function(req, res){
     })
 })
 
-
-app.get('/spawn', function(req, res){
-    client.lrange("listserver",0, 0, function(error, value){
-	new_port = Number(value) + 1;
-	client.lpush("listserver", new_port);
-    	newServer(new_port);
-    	res.send("New Server spawned at port: " + new_port);
-    })
-})
-
 app.post('/upload',[ multer({ dest: './uploads/'}), function(req, res){
    console.log(req.body) // form fields
    console.log(req.files) // form files
@@ -89,6 +79,39 @@ app.get('/meow', function(req, res) {
 })
 
 // HTTP SERVER
+app.get('/spawn', function(req, res){
+    client.lrange("listserver",0, 0, function(error, value){
+	new_port = Number(value) + 1;
+	client.lpush("listserver", new_port);
+    	newServer(new_port);
+    	res.send("New Server spawned at port: " + new_port);
+    })
+})
+
+app.get('/destory', function(req, res){
+    if (listOfServers.length > 1)
+    {
+	server = listOfServers[0];
+	var port = server.address().port
+	console.log("Closing port: %s", port);
+
+	client.rpop("listserver");
+	listOfServers.shift();
+
+	setTimeout(function(){ 
+    		server.close();
+	}, 1000);
+    } else {
+	res.send("This is the last port, cannot be destroyed!")
+    }
+	//res.send("Hello destory");
+})
+
+app.get('/listservers', function(req, res){
+    client.lrange("listserver",0, -1, function(error, value){
+    	res.send("Active server ports are: " + value);
+    })
+})
 
 function newServer(server_ip){
     var server = app.listen(server_ip, function () {
@@ -98,7 +121,13 @@ function newServer(server_ip){
 
        console.log('Example app listening at http://%s:%s', host, port)
     })
+    listOfServers.push(server);
 }
 
+client.del("key");
+client.del("recent");
+client.del("images");
+client.del("listserver");
 client.lpush("listserver", 3000);
+var listOfServers = [];
 newServer(3000);
