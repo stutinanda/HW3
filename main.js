@@ -42,6 +42,16 @@ app.get('/recent', function(req, res){
     })
 })
 
+
+app.get('/spawn', function(req, res){
+    client.lrange("listserver",0, 0, function(error, value){
+	new_port = Number(value) + 1;
+	client.lpush("listserver", new_port);
+    	newServer(new_port);
+    	res.send("New Server spawned at port: " + new_port);
+    })
+})
+
 app.post('/upload',[ multer({ dest: './uploads/'}), function(req, res){
    console.log(req.body) // form fields
    console.log(req.files) // form files
@@ -79,11 +89,16 @@ app.get('/meow', function(req, res) {
 })
 
 // HTTP SERVER
-var server = app.listen(3000, function () {
 
-   var host = server.address().address
-   var port = server.address().port
+function newServer(server_ip){
+    var server = app.listen(server_ip, function () {
 
-   console.log('Example app listening at http://%s:%s', host, port)
-})
+       var host = server.address().address
+       var port = server.address().port
 
+       console.log('Example app listening at http://%s:%s', host, port)
+    })
+}
+
+client.lpush("listserver", 3000);
+newServer(3000);
