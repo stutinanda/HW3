@@ -52,7 +52,7 @@ app.post('/upload',[ multer({ dest: './uploads/'}), function(req, res){
 	    if (err) throw err;
  	    var img = new Buffer(data).toString('base64');
 	    client.rpush("images", img);
- 	    console.log(img);
+ 	    console.log("Image uploaded in the queue!");
 	});
    }
 
@@ -60,7 +60,9 @@ app.post('/upload',[ multer({ dest: './uploads/'}), function(req, res){
 }]);
 
 app.get('/meow', function(req, res) {
-   {
+{
+   client.llen("images",function(err, val){
+    if(val > 0){
        client.rpop("images", function(error, imagedata){
 	   if (error) { res.send("No image in the queue!"); }
            else {
@@ -69,7 +71,11 @@ app.get('/meow', function(req, res) {
        		res.end();
 	   }
        })
-   }
+    } else {
+	res.send('No image in the queue!');
+    }
+   })
+}
 })
 
 // HTTP SERVER
