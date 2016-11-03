@@ -88,19 +88,27 @@ app.get('/spawn', function(req, res){
     })
 })
 
-app.get('/destory', function(req, res){
-    if (listOfServers.length > 1)
+app.get('/destroy', function(req, res){
+    server_count = listOfServers.length;
+    if (server_count > 1)
     {
-	server = listOfServers[0];
+	index = Math.floor((Math.random() * server_count)); 
+	console.log(index);
+	server = listOfServers[index];
+	listOfServers.splice(index, 1);
 	var port = server.address().port
 	console.log("Closing port: %s", port);
-
-	client.rpop("listserver");
-	listOfServers.shift();
+	
+	var index_value = 4000;
+	client.lindex("listserver", (server_count - index -1), function(err, value){
+		index_value = value;
+		console.log(index_value);
+	})
 
 	setTimeout(function(){ 
+		client.lrem("listserver", 1, index_value, function(err, obj){});
     		server.close();
-	}, 1000);
+	}, 1500);
     } else {
 	res.send("This is the last port, cannot be destroyed!")
     }
