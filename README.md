@@ -22,7 +22,7 @@ Create two routes, `/get` and `/set`.
 
 When `/set` is visited, a new key, with below value is set:
 > "this message will self-destruct in 10 seconds".
-> 
+ 
 	http://localhost:3000/set
 
 Above key expire in 10 seconds. To see the above message visit `/get` within 10 seconds of `/set`
@@ -72,7 +72,7 @@ A new command `destroy`, destroys a random server, it takes approximately 2-3 se
     Active servers are: http://localhost:3005 http://localhost:3003 http://localhost:3002 http://localhost:3001 http://localhost:3000
 
 ### Demonstrate proxy
-Proxy `htp://localhost:5050` uniformly deliver requests to available servers. E.g., if a visit happens to `/` then it toggle between `localhost:3000`, `localhost:3001`, etc.  And, it uses redis to look up which server to resolve to.
+Proxy `http://localhost:5050` uniformly deliver requests to available servers. E.g., if a visit happens to `/` then it toggle between `localhost:3000`, `localhost:3001`, etc.  And, it uses redis to look up which server to resolve to.
 
 Start proxy server:
 
@@ -91,3 +91,9 @@ You can verify the uniform distribution of requests from the console from where 
 	Forwarding request to http://127.0.0.1:3002
 
 Also, you can perform all the above completed tasks using proxy.
+
+### Screencast
+Please find link to the youtube screencast here: https://youtu.be/HD65ReBb5nE
+Be sure to view video in 720p (High Resolution) for clarity.
+
+Alternatively, video is store in 'Video' directory in this repo.
