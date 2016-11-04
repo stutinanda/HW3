@@ -1,79 +1,93 @@
-Cache, Proxies, Queues
+Homework #3
 =========================
 
 ### Setup
 
-* Clone this repo, run `npm install`.
+* Clone this repo, run `sudo npm install`.
 * Install redis and run on localhost:6379
 
-### A simple web server
+### Run Server
+The default server runs on port 3000
 
-Use [express](http://expressjs.com/) to install a simple web server.
+	$ node main.js
+    Example app listening at http://:::3000
+   
+Access server on:
 
-	var server = app.listen(3000, function () {
-	
-	  var host = server.address().address
-	  var port = server.address().port
-	
-	  console.log('Example app listening at http://%s:%s', host, port)
-	})
+	http://localhost:3000
 
-Express uses the concept of routes to use pattern matching against requests and sending them to specific functions.  You can simply write back a response body.
-
-	app.get('/', function(req, res) {
-	  res.send('hello world')
-	})
-
-### Redis
-
-You will be using [redis](http://redis.io/) to build some simple infrastructure components, using the [node-redis client](https://github.com/mranney/node_redis).
-
-	var redis = require('redis')
-	var client = redis.createClient(6379, '127.0.0.1', {})
-
-In general, you can run all the redis commands in the following manner: client.CMD(args). For example:
-
-	client.set("key", "value");
-	client.get("key", function(err,value){ console.log(value)});
-
-### An expiring cache
+### Complete set/get
 
 Create two routes, `/get` and `/set`.
 
-When `/set` is visited, set a new key, with the value:
+When `/set` is visited, a new key, with below value is set:
 > "this message will self-destruct in 10 seconds".
+> 
+	http://localhost:3000/set
 
-Use the expire command to make sure this key will expire in 10 seconds.
+Above key expire in 10 seconds. To see the above message visit `/get` within 10 seconds of `/set`
 
-When `/get` is visited, fetch that key, and send value back to the client: `res.send(value)` 
+	http://localhost:3000/get
 
 
-### Recent visited sites
+### Complete recent
 
-Create a new route, `/recent`, which will display the most recently visited sites.
+`/recent`, displays the most recently visited sites.
 
-There is already a global hook setup, which will allow you to see each site that is requested:
+	http://localhost:3000/recent
 
-	app.use(function(req, res, next) 
-	{
-	...
+It uses lpush, ltrim, and lrange redis commands to store the most recent 5 sites visited, and return that to the client.
 
-Use the lpush, ltrim, and lrange redis commands to store the most recent 5 sites visited, and return that to the client.
 
-### Cat picture uploads: queue
+### Complete upload/meow
 
-Implement two routes, `/upload`, and `/meow`.
+The two routes, `/upload` store the images in a queue, and `/meow` display the most recent image to the client and *remove* the image from the queue.
  
-A stub for upload and meow has already been provided.
+Use curl to help you upload easily via terminal
 
-Use curl to help you upload easily.
+	$ curl -F "image=@./img/morning.jpg" localhost:3000/upload
 
-	curl -F "image=@./img/morning.jpg" localhost:3000/upload
+To access the above image visit below link:
 
-Have `upload` store the images in a queue.  Have `meow` display the most recent image to the client and *remove* the image from the queue. Note, this is more like a stack.
+	http://localhost:3000/meow
+    
+### Complete spawn/destory/listservers
 
-### Proxy server
+A new command `spawn`, creates a new app server running on another port (new port mentioned in the message), to verify visit below link:
 
-Bonus: How might you use redis and express to introduce a proxy server?
+	http://localhost:3000/spawn
+  	New Server spawned at port: 3001
 
-See [rpoplpush](http://redis.io/commands/rpoplpush)
+To see the list of available servers, use the below command. Available servers should be stored in redis, which can be seen by `listservers`.
+
+	http://localhost:3000/listservers
+    Active servers are: http://localhost:3002 http://localhost:3001 http://localhost:3000
+
+A new command `destroy`, destroys a random server, it takes approximately 2-3 seconds to identify randon server and destroy it (destroyed server is mentioned in the message). To verify visit below link:
+
+	http://localhost:3000/destroy
+    Server Destroyed at port: 3004
+    
+    http://localhost:3000/listservers
+    Active servers are: http://localhost:3005 http://localhost:3003 http://localhost:3002 http://localhost:3001 http://localhost:3000
+
+### Demonstrate proxy
+Proxy `htp://localhost:5050` uniformly deliver requests to available servers. E.g., if a visit happens to `/` then it toggle between `localhost:3000`, `localhost:3001`, etc.  And, it uses redis to look up which server to resolve to.
+
+Start proxy server:
+
+	$ node runProxy.js
+
+Then visit:
+
+	http://localhost:5050/
+    
+You can verify the uniform distribution of requests from the console from where you ran the terminal command, it list the port to which that command has been forwarded.
+
+	$ node runProxy.js 
+	listening on port 5050
+	Forwarding request to http://127.0.0.1:3005
+	Forwarding request to http://127.0.0.1:3003
+	Forwarding request to http://127.0.0.1:3002
+
+Also, you can perform all the above completed tasks using proxy.

@@ -19,14 +19,12 @@ var server = http.createServer(function(req, res) {
   // and then proxy the request. 
 	
 	client.llen("listserver", function (err, server_count){
-		console.log('server_count ' + server_count);
 		if ((server_index + 1) > server_count){
 			server_index = 0;
 		}
 	})
 
 	setTimeout(function(){
-		console.log(server_index);
 		client.lindex("listserver", server_index, function(err, value){
 			server_index += 1;
   			proxy.web(req, res, { target: 'http://127.0.0.1:' + value });

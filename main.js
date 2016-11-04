@@ -90,6 +90,7 @@ app.get('/spawn', function(req, res){
 
 function find_server_to_destroy(req_port){
 
+    	server_count = listOfServers.length;
 	index = Math.floor((Math.random() * server_count)); 
 	console.log('Request Port: '+ req_port);
 	console.log('Port Suggested: '+ index);
@@ -133,7 +134,12 @@ app.get('/destroy', function(req, res){
 
 app.get('/listservers', function(req, res){
     client.lrange("listserver",0, -1, function(error, value){
-    	res.send("Active server ports are: " + value);
+    	server_count = listOfServers.length;
+	var str = "Active servers are: ";
+	for (i = 0; i < server_count; i++){
+		str += "\n http://localhost:" + value[i];
+	}
+    	res.send(str);
     })
 })
 
