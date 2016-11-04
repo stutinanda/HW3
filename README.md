@@ -93,7 +93,7 @@ You can verify the uniform distribution of requests from the console from where 
 Also, you can perform all the above completed tasks using proxy.
 
 ### Screencast
-Please find link to the youtube screencast here: https://youtu.be/HD65ReBb5nE
+Please find link to the youtube screencast here: https://youtu.be/HD65ReBb5nE.
 Be sure to view video in 720p (High Resolution) for clarity.
 
 Alternatively, video is store in 'Video' directory in this repo.
