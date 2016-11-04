@@ -88,27 +88,43 @@ app.get('/spawn', function(req, res){
     })
 })
 
+function find_server_to_destroy(req_port){
+
+	index = Math.floor((Math.random() * server_count)); 
+	console.log('Request Port: '+ req_port);
+	console.log('Port Suggested: '+ index);
+	server = listOfServers[index];
+	var port = server.address().port
+	if (port == req_port){
+		index = find_server_to_destroy(req_port);
+	}
+	return index;
+}
+
 app.get('/destroy', function(req, res){
     server_count = listOfServers.length;
     if (server_count > 1)
     {
 	index = Math.floor((Math.random() * server_count)); 
-	console.log(index);
-	server = listOfServers[index];
-	listOfServers.splice(index, 1);
-	var port = server.address().port
-	console.log("Closing port: %s", port);
+	index = find_server_to_destroy(req.socket.localPort); 
+	var index_value = 3000;
 	
-	var index_value = 4000;
-	client.lindex("listserver", (server_count - index -1), function(err, value){
-		index_value = value;
-		console.log(index_value);
-	})
+	setTimeout(function() {
+		server = listOfServers[index];
+		listOfServers.splice(index, 1);
+		var port = server.address().port
+		console.log("Closing port: %s", port);
+	
+		client.lindex("listserver", (server_count - index -1), function(err, value){
+			index_value = value;
+		})
+	}, 1500);
 
 	setTimeout(function(){ 
 		client.lrem("listserver", 1, index_value, function(err, obj){});
     		server.close();
-	}, 1500);
+		res.send("Server Destroyed at port: " + index_value);
+	}, 2500);
     } else {
 	res.send("This is the last port, cannot be destroyed!")
     }
