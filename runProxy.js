@@ -27,8 +27,8 @@ var server = http.createServer(function(req, res) {
 	setTimeout(function(){
 		client.lindex("listserver", server_index, function(err, value){
 			server_index += 1;
-  			proxy.web(req, res, { target: 'http://127.0.0.1:' + value });
-                	console.log('Forwarding request to http://127.0.0.1:' + value);
+  			proxy.web(req, res, { target: 'http://localhost:' + value });
+                	console.log('Forwarding request to http://localhost:' + value);
         	})
 	}, 1500);
 
