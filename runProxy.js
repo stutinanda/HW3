@@ -2,7 +2,7 @@ var http = require('http'),
     httpProxy = require('http-proxy');
 // REDIS
 var redis = require('redis')
-var client = redis.createClient(6379, '127.0.0.1', {}) 
+var client = redis.createClient(6379, 'redis') 
 var server_index = 0;
 // 
 // Create a proxy server with custom application logic 
