@@ -152,13 +152,11 @@ function newServer(server_ip){
        console.log('Example app listening at http://%s:%s', host, port)
     })
 
-    listOfServers.push(server);
 }
 
 client.del("key");
 client.del("recent");
 client.del("images");
 client.del("listserver");
-client.lpush("listserver", 3000);
 var listOfServers = [];
 newServer(3000);
