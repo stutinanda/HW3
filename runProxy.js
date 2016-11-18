@@ -4,7 +4,7 @@ var http = require('http'),
 var redis = require('redis')
 var client = redis.createClient(6379, 'redis') 
 var server_index = 0;
-//var app_ip = process.env.APPL_IP;
+var app_ip = process.env.APPL_IP;
 // 
 // Create a proxy server with custom application logic 
 // 
@@ -28,7 +28,6 @@ var server = http.createServer(function(req, res) {
 	setTimeout(function(){
 		client.lindex("listserver", server_index, function(err, app_ip){
 			server_index += 1;*/
-			app_ip="localhost"
 			value = 3000;
   			proxy.web(req, res, { target: 'http://' + app_ip + ':' + value });
                 	console.log('Forwarding request to http://' + app_ip + ':' + value);
