@@ -19,7 +19,7 @@ var server = http.createServer(function(req, res) {
   // You can define here your custom logic to handle the request 
   // and then proxy the request. 
 	
-	client.llen("listserver", function (err, server_count){
+	/*client.llen("listserver", function (err, server_count){
 		if ((server_index + 1) > server_count){
 			server_index = 0;
 		}
@@ -27,12 +27,13 @@ var server = http.createServer(function(req, res) {
 
 	setTimeout(function(){
 		client.lindex("listserver", server_index, function(err, app_ip){
-			server_index += 1;
+			server_index += 1;*/
+			app_ip="localhost"
 			value = 3000;
   			proxy.web(req, res, { target: 'http://' + app_ip + ':' + value });
                 	console.log('Forwarding request to http://' + app_ip + ':' + value);
-        	})
-	}, 1500);
+        /*	})
+	}, 1500);*/
 
 });
  
