@@ -23,12 +23,12 @@ app.use(function(req, res, next)
 });
 
 app.get('/', function(req, res) {
-   res.send('hello world')
+   res.send('hello world\n')
 })
 
 app.get('/set', function(req, res) {
    client.setex("key", 10,"this message will self-destruct in 10 seconds");
-   res.send('');
+   res.send('setting temporary message\n');
 })
 
 app.get('/get', function(req, res){
@@ -84,14 +84,14 @@ app.get('/spawn', function(req, res){
     var cmd = 'sh -c /src/create-container.sh';
     exec(cmd, function(error, stdout, stderr) {
     	if(error !== null){ 
-		console.log('Error in creating new container!');
-		console.log('exec error: ${error}');
-		res.send("Error in creating new container!");
+		console.log('Error in creating new container!\n');
+		console.log('exec error: ${error}\n');
+		res.send("Error in creating new container!\n");
 	} else {
-		console.log('New container spawned!');
+		console.log('New container spawned!\n');
 	}
     })
-    res.send("New container spawned!");
+    res.send("New container spawned!\n");
     /*client.lrange("listserver",0, 0, function(error, value){
 	new_port = Number(value) + 1;
 	client.lpush("listserver", new_port);
