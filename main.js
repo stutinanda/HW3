@@ -2,6 +2,7 @@ var redis = require('redis')
 var multer  = require('multer')
 var express = require('express')
 var fs      = require('fs')
+var exec = require('child_process').exec;
 var app = express()
 // REDIS
 var client = redis.createClient(6379, 'redis')
@@ -80,12 +81,23 @@ app.get('/meow', function(req, res) {
 
 // HTTP SERVER
 app.get('/spawn', function(req, res){
-    client.lrange("listserver",0, 0, function(error, value){
+    var cmd = 'sh -c /src/create-container.sh';
+    exec(cmd, function(error, stdout, stderr) {
+    	if(error !== null){ 
+		console.log('Error in creating new container!');
+		console.log('exec error: ${error}');
+		res.send("Error in creating new container!");
+	} else {
+		console.log('New container spawned!');
+	}
+    })
+    res.send("New container spawned!");
+    /*client.lrange("listserver",0, 0, function(error, value){
 	new_port = Number(value) + 1;
 	client.lpush("listserver", new_port);
     	newServer(new_port);
     	res.send("New Server spawned at port: " + new_port);
-    })
+    })*/
 })
 
 function find_server_to_destroy(req_port){
